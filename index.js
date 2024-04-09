@@ -83,8 +83,13 @@ app.post('/api/report', async function(req, res) {
     //get rating info (mock)
     const ratingInfo = await getRatingInfo(company, location);
     if (ratingInfo.error !== undefined) {
-      res.status(500).json({ error: ratingInfo.error });
-      return;
+      if(ratingInfo.error == "scraping limit reached"){
+        res.status(420).json({ error: ratingInfo.error });
+        return;
+      }else{
+        res.status(500).json({ error: ratingInfo.error });
+        return;
+      }
     }
 
     //save to mongo
