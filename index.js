@@ -62,6 +62,10 @@ app.get('/api/status', (req, res) => {
 //serve api requests
 app.post('/api/report', async function(req, res) {
 
+  //get input
+  const { company, location } = req.body;
+  console.log("Company: " + company +  ", Location: " + location);
+
   //check if company is already on mongo
   const result = await Report.findOne({ company_name: company , review_location: location });
   if (result) {
