@@ -62,15 +62,6 @@ app.get('/api/status', (req, res) => {
 //serve api requests
 app.post('/api/report', async function(req, res) {
 
-  //validate input
-  const { company, location } = req.body;
-  console.log("Company: " + company +  ", Location: " + location);
-  const isValidInput = company && location && company.match(/^[a-zA-Z0-9\-]+$/);
-  if (!isValidInput) {
-    res.status(400).json({ error: "Invalid input data" });
-    return;
-  }
-
   //check if company is already on mongo
   const result = await Report.findOne({ company_name: company , review_location: location });
   if (result) {

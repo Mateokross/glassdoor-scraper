@@ -6,8 +6,8 @@ const unirest = require("unirest");
 const getRatingInfo = async (company, location = "barcelona") => {
   try {
     //search
-    companySearchString = company.replace(/-/g, '+').toLowerCase();
-    locationSearchString = location.replace(/-/g, '+').toLowerCase();
+    companySearchString = encodeURIComponent(company);
+    locationSearchString = encodeURIComponent(location);
     const url = `https://www.google.com/search?q=site%3Aglassdoor.com+${companySearchString}+reviews+in+${locationSearchString}`;
     let user_agent = selectRandom();
     let header = {
