@@ -3,11 +3,12 @@ const cheerio = require("cheerio");
 const unirest = require("unirest");
 
 
-const getRatingInfo = async (company) => {
+const getRatingInfo = async (company, location = "barcelona") => {
   try {
     //search
     companySearchString = company.replace(/-/g, '+').toLowerCase();
-    const url = `https://www.google.com/search?q=site%3Aglassdoor.com+${companySearchString}+reviews+in+barcelona`;
+    locationSearchString = location.replace(/-/g, '+').toLowerCase();
+    const url = `https://www.google.com/search?q=site%3Aglassdoor.com+${companySearchString}+reviews+in+${locationSearchString}`;
     let user_agent = selectRandom();
     let header = {
       "User-Agent": `${user_agent}`
@@ -24,19 +25,20 @@ const getRatingInfo = async (company) => {
     const selectors = {
       rating: ".fG8Fp.uo4vr span:nth-child(2)",
       votes: ".fG8Fp.uo4vr span:nth-child(3)",
-      link: "#rso > div:nth-child(1) > div > div > div > div.kb0PBd.cvP2Ce.A9Y9g.jGGQ5e > div > div > span > a"
+      link: ".yuRUbf a"
     }
     const content = {
       company_name: company,
+      review_location: location,
       search_url: url,
-      glassdoor_rating: $(selectors.rating).eq(0).text().replace("Rating: ", ""),
-      glassdoor_votes: $(selectors.votes).eq(0).text().replace(" votes", "").replace(" vote", ""),
+      glassdoor_rating: $(selectors.rating).eq(0).text().replace("Rating: ", "").replace("Valoración: ", ""),
+      glassdoor_votes: $(selectors.votes).eq(0).text().replace(" votes", "").replace(" vote", "").replace(" votos", "").replace(" voto", ""),
       glassdoor_link: $(selectors.link).attr("href") || ""
     }
-    console.log(content)
-    if (content.glassdoor_rating == "") {
-      return { error: "mysterius error, couldn't get a rating" }
+    if (content.glassdoor_rating == "" || content.glassdoor_rating.length > 3) {
+      return { error: "couldn't get the rating, check the selectors" }
     } else {
+      console.log("Scraper run successfully")
       return content;
     }
   } catch (e) {
